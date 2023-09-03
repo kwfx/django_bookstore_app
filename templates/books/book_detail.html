@@ -1,18 +1,13 @@
 {% extends "_base.html" %}
 {% block title %}Book Form{% endblock title %}
 {% block content %}
-<div class="container pt-10">
-    <div class="row">
-        <div class="col border">Title</div>
-        <div class="col border">{{object.title}}</div>
-    </div>
-    <div class="row">
-        <div class="col border">Author</div>
-        <div class="col border">{{object.author}}</div>
-    </div>
-    <div class="row">
-        <div class="col border">Price</div>
-        <div class="col border">{{object.price}}</div>
+<div class="book-detail">
+    <h1><i>{{ book.title }}</i></h1>
+    <p>Author: {{ book.author }}</p>
+    <p>Price: {{ book.price }}</p>
+    <div>
+        <h3>Review</h3>
+        {% include "books/rating_stars.html" with overall_rate=book.overall_rate %}
     </div>
 </div>
 {% endblock content %}

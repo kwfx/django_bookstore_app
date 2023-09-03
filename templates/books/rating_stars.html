@@ -1,0 +1,5 @@
+{% with ''|center:5 as range %}
+{% for _ in range %}
+    <span class="fa fa-star" style="color: {% if overall_rate >= forloop.counter %}orange{% else %}lightgray{% endif %}"></span>
+{% endfor %}
+{% endwith %}

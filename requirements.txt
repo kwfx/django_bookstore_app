@@ -12,6 +12,7 @@ django-allauth==0.54.0
 django-cache-url==3.4.4
 django-crispy-forms==2.0
 environs==9.5.0
+fontawesomefree==6.4.2
 idna==3.4
 marshmallow==3.20.1
 oauthlib==3.2.2
