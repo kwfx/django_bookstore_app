@@ -1,5 +1,10 @@
 {% with ''|center:5 as range %}
-{% for _ in range %}
-    <span class="fa fa-star" style="color: {% if overall_rate >= forloop.counter %}orange{% else %}lightgray{% endif %}"></span>
-{% endfor %}
+<form name="rate_book_form" method="post" action="{% url 'rate_book_view' book.id user.id %}">
+    {% csrf_token %}
+    {% for i in range %}
+        <button type="submit" class="fa fa-star btn p-0" name="button_star" value="{{forloop.counter}}"
+            style="color: {% if book.current_user_rate >= forloop.counter %}orange{% else %}lightgray{% endif %}">
+        </button>
+    {% endfor %}
+</form>
 {% endwith %}

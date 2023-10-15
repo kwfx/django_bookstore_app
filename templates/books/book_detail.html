@@ -2,12 +2,31 @@
 {% block title %}Book Form{% endblock title %}
 {% block content %}
 <div class="book-detail">
+    <nav>
+        <ul class="pagination" style="justify-content: center;">
+          <li class="page-item"><a class="page-link" href="{{book.get_previous_record}}">Previous</a></li>
+          <li class="page-item"><a class="page-link" href="{{book.get_next_record}}">Next</a></li>
+        </ul>
+      </nav>
+    <img class="bookcover" 
+        {% if book.cover %} src="{{ book.cover.url|default:''}}" title="{{book.title}}"
+        {% else %} 
+           src="#" title="No cover"
+        {% endif %}
+    >
     <h1><i>{{ book.title }}</i></h1>
     <p>Author: {{ book.author }}</p>
     <p>Price: {{ book.price }}</p>
-    <div>
-        <h3>Review</h3>
-        {% include "books/rating_stars.html" with overall_rate=book.overall_rate %}
+    <div class="d-flex justify-content-center">
+      {% include "books/rating_stars.html" with book=book %}
     </div>
+    <h3>Reviews</h3>
+    <div class="d-flex justify-content-center">
+      <ul>
+        {% for review in book.reviews.all %}
+        <li>@{{ review.user }}: {{ review.text }}</li>
+        {% endfor %}
+      </ul>     
+    </div> 
 </div>
 {% endblock content %}
