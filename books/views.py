@@ -2,8 +2,8 @@ from django.shortcuts import render, get_object_or_404
 from django.urls import reverse
 from django.views.generic import ListView, DetailView, RedirectView
 from django.contrib.auth import get_user_model
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from .models import Book, Review
-
 
 
 class BookListView(LoginRequiredMixin, ListView):
@@ -11,11 +11,14 @@ class BookListView(LoginRequiredMixin, ListView):
     context_object_name = "book_list" # object_list in template => book_list
     template_name = "books/book_list.html"
     ordering = ['title']
+    login_url = "account_login"
 
 
-class BookFormView(DetailView):
+class BookFormView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
     model = Book
     template_name = "books/book_detail.html"
+    login_url = "account_login"
+    permission_required = "books.special_status"
 
     def get(self, request, *args, **kwargs):
         res= super().get(request, *args, **kwargs)
