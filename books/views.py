@@ -1,9 +1,14 @@
+from typing import Any
+from django.db.models.query import QuerySet
 from django.shortcuts import render, get_object_or_404
 from django.urls import reverse
 from django.views.generic import ListView, DetailView, RedirectView
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from .models import Book, Review
+from django.http import HttpResponseRedirect
+from django.db.models import Q
+
 
 
 class BookListView(LoginRequiredMixin, ListView):
@@ -21,11 +26,11 @@ class BookFormView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
     permission_required = "books.special_status"
 
     def get(self, request, *args, **kwargs):
-        res= super().get(request, *args, **kwargs)
+        res = super().get(request, *args, **kwargs)
         self.object.user = request.user
-        return res 
-    
-    
+        return res
+
+
 class RateBookView(RedirectView):
 
     def get_redirect_url(self, *args, **kwargs):
@@ -49,3 +54,27 @@ class RateBookView(RedirectView):
                     user=user
                 )
         return reverse("book_form_view", args=[book.id])
+
+
+class SearchRedictView(RedirectView):
+
+    def get_redirect_url(self, *args, **kwargs):
+        title = self.request.POST.get("search_input")
+        books = Book.objects.all().filter(title=title)
+        if not books:
+            return f"{reverse('book_list_view')}?not_found=1"
+        return reverse("book_form_view", args=[books[0].id])
+
+
+class SearchBookView(ListView):
+    model = Book
+    context_object_name = "book_list"
+    template_name = "books/book_search.html"
+    # queryset = Book.objects.filter(title__icontains="beginners")
+
+    def get_queryset(self) -> QuerySet[Any]:
+        search_query = self.request.GET.get("q")
+        print("search query ::::::::::::: ", search_query)
+        return self.model.objects.all().filter(
+            Q(title__icontains=search_query) | Q(author__icontains=search_query)
+        )

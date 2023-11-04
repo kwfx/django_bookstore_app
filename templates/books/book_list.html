@@ -1,6 +1,17 @@
 {% extends "_base.html" %}
 {% block title %}Books{% endblock title %}
 {% block content %}
+<div>
+    <form name="form-search" method="get" action="{% url 'search_book' %}">
+        {% csrf_token %}
+        <input name="q" class="input-search"/>
+    </form>
+</div>
+{% if request.GET.not_found %}
+<span>
+    NOT FOUND
+</span>
+{% endif %}
 {% for book in book_list %}
     <div>
     <h2><a href="{{book.get_absolute_url}}">{{ book.title }}</a></h2>
