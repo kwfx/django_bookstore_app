@@ -7,7 +7,7 @@ services:
     - .:/code
    environment:
     - "DJANGO_SECRET_KEY=django-insecure-^!!59cr^vz4fo7k62e-)(3wcp$$2@hxi-aalfic&jyxj-&8l5ox"
-    - "DJANGO_ALLOWED_HOSTS=127.0.0.1"
+    - "DJANGO_ALLOWED_HOSTS=127.0.0.1;"
     - "DJANGO_DEBUG=True"
    ports:
     - 8000:8000

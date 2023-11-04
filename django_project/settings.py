@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 
 from pathlib import Path
 from environs import Env
+import socket
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -26,8 +28,8 @@ SECRET_KEY = env("DJANGO_SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env.bool("DJANGO_DEBUG", False)
-ALLOWED_HOSTS = env("DJANGO_ALLOWED_HOSTS").split(";") if not DEBUG else []
-LOGIN_REDIRECT_URL = "home" 
+ALLOWED_HOSTS = env("DJANGO_ALLOWED_HOSTS").split(";")
+LOGIN_REDIRECT_URL = "home"
 ACCOUNT_LOGOUT_REDIRECT = "home" 
 ACCOUNT_USERNAME_REQUIRED = False # new
 ACCOUNT_AUTHENTICATION_METHOD = "email" # new
@@ -72,6 +74,7 @@ INSTALLED_APPS = [
     "allauth.account",
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
+    'debug_toolbar',
     # LOCAL
     'accounts.apps.AccountsConfig',
     "pages.apps.PagesConfig",
@@ -79,6 +82,8 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    "django.middleware.cache.UpdateCacheMiddleware",
+    "debug_toolbar.middleware.DebugToolbarMiddleware",
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -86,6 +91,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "django.middleware.cache.FetchFromCacheMiddleware",
 ]
 
 ROOT_URLCONF = 'django_project.urls'
@@ -135,7 +141,6 @@ AUTH_USER_MODEL = "accounts.CustomUser"
 # django-allauth config
 SITE_ID = 1
 # ACCOUNT_SESSION_REMEMBER = True
- 
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
 # Password validation
@@ -179,6 +184,10 @@ STATICFILES_STORAGE = "django.contrib.staticfiles.storage.StaticFilesStorage"
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
+CACHE_MIDDLEWARE_ALIAS = "default"
+CACHE_MIDDLEWARE_SECONDS = 604800
+CACHE_MIDDLEWARE_KEY_PREFIX = ""
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
@@ -189,5 +198,13 @@ CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
 CORS_ORIGIN_ALLOW_ALL = False
 
+hostname, _, ips = socket.gethostbyname_ex(socket.gethostname())
+INTERNAL_IPS = [ip[:-1] + "1" for ip in ips]
+ALLOWED_HOSTS += INTERNAL_IPS
+print("ALLOWED_HOSTS ::: ", ALLOWED_HOSTS)
 
-
+DEBUG_TOOLBAR_CONFIG = {
+ 'INTERCEPT_REDIRECTS': False,
+ 'SHOW_TEMPLATE_CONTEXT': True,
+ 'INSERT_BEFORE': '</head>'
+}
